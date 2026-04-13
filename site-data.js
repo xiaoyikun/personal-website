@@ -1,5 +1,5 @@
 /* 由后台管理自动生成，请勿手动编辑 */
-/* 生成时间: 2026/4/13 21:17:11 */
+/* 生成时间: 2026/4/13 21:21:16 */
 window.ARTFOLIO_DATA = {
   "works": [],
   "profile": {
@@ -12,7 +12,7 @@ window.ARTFOLIO_DATA = {
     "statYears": "1"
   },
   "contact": {
-    "email": "3290351729",
+    "email": "3290351729@qq.com",
     "phone": "19207549483",
     "address": "",
     "weibo": "",
