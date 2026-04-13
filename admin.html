@@ -258,8 +258,9 @@
         <input type="text" id="workTitle" placeholder="晨光中的田野">
       </div>
       <div class="form-group">
-        <label>图片URL</label>
-        <input type="text" id="workImage" placeholder="https://..." oninput="document.getElementById('workImgPreview').src=this.value">
+        <label>上传图片</label>
+        <input type="file" id="workImageFile" accept="image/*" onchange="previewWorkImage(event)">
+        <input type="hidden" id="workImage">
         <img class="img-preview" id="workImgPreview" src="">
       </div>
       <div class="form-row">
@@ -363,12 +364,25 @@
       `).join('');
     }
 
+    /* ========== 图片上传预览 ========== */
+    function previewWorkImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        document.getElementById('workImage').value = ev.target.result;
+        document.getElementById('workImgPreview').src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
     function openWorkModal(id) {
       const modal = document.getElementById('workModal');
       document.getElementById('editWorkId').value = '';
       document.getElementById('modalTitle').textContent = '添加作品';
       document.getElementById('workTitle').value = '';
       document.getElementById('workImage').value = '';
+      document.getElementById('workImageFile').value = '';
       document.getElementById('workImgPreview').src = '';
       document.getElementById('workCategory').value = 'oil';
       document.getElementById('workYear').value = '';
@@ -389,6 +403,7 @@
       document.getElementById('modalTitle').textContent = '编辑作品';
       document.getElementById('workTitle').value = w.title;
       document.getElementById('workImage').value = w.image;
+      document.getElementById('workImageFile').value = '';
       document.getElementById('workImgPreview').src = w.image;
       document.getElementById('workCategory').value = w.category;
       document.getElementById('workYear').value = w.year || '';
@@ -523,7 +538,7 @@
       e.target.value = '';
     }
 
-    /* ========== 发布数据（生成 site-data.js） ========== */
+    /* ========== 发布数据（直接下载 site-data.js） ========== */
     function publishData() {
       const data = {
         works: getData(STORAGE_KEYS.works) || [],
@@ -535,8 +550,10 @@
         if (!confirm('当前没有作品数据，确定要发布吗？')) return;
       }
 
+      // 直接生成 site-data.js 内容
+      const timestamp = new Date().toLocaleString('zh-CN');
       const jsContent = '/* 由后台管理自动生成，请勿手动编辑 */\n'
-        + '/* 生成时间: ' + new Date().toLocaleString('zh-CN') + ' */\n'
+        + '/* 生成时间: ' + timestamp + ' */\n'
         + 'window.ARTFOLIO_DATA = ' + JSON.stringify(data, null, 2) + ';\n';
 
       const blob = new Blob([jsContent], { type: 'application/javascript' });
@@ -544,7 +561,11 @@
       a.href = URL.createObjectURL(blob);
       a.download = 'site-data.js';
       a.click();
-      showToast('site-data.js 已生成！请放入网站根目录并推送到 GitHub');
+
+      alert('✅ site-data.js 已下载！\n\n'
+        + '请将下载的文件覆盖到项目根目录，然后用 GitHub Desktop 推送即可。\n\n'
+        + 'GitHub Pages 会在 1-2 分钟内自动更新。');
+      showToast('site-data.js 已生成并下载');
     }
 
     /* ========== 点击弹窗外关闭 ========== */
