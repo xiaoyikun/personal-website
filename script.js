@@ -27,7 +27,15 @@
   let visibleItems = [];
 
   // ========== 数据读取 ==========
+  // 优先读 site-data.js 写入的全局数据（用于线上发布），没有才回退到 localStorage
   function getData(key) {
+    // key 格式如 'artfolio_works' → 对应 ARTFOLIO_DATA.works
+    if (window.ARTFOLIO_DATA) {
+      const shortKey = key.replace('artfolio_', '');
+      if (window.ARTFOLIO_DATA[shortKey] !== undefined) {
+        return window.ARTFOLIO_DATA[shortKey];
+      }
+    }
     try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; }
   }
 
