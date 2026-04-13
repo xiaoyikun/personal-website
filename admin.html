@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理 | ArtFolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* ===== 变量 ===== */
+    :root {
+      --bg: #f5f5f5; --bg2: #ffffff; --text: #1a1a1a; --text2: #555;
+      --accent: #c9a96e; --accent-hover: #b8923f; --border: #e0e0e0;
+      --danger: #e74c3c; --danger-hover: #c0392b; --success: #27ae60;
+      --shadow: rgba(0,0,0,0.06); --radius: 8px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f0f0f; --bg2: #1a1a1a; --text: #f0f0f0; --text2: #aaa;
+      --border: #2a2a2a; --shadow: rgba(0,0,0,0.3);
+    }
+
+    /* ===== 基础 ===== */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+    a { color:var(--accent); text-decoration:none; }
+
+    /* ===== 顶栏 ===== */
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 32px; background:var(--bg2); border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:100;
+    }
+    .topbar h1 { font-size:1.2rem; font-weight:600; }
+    .topbar h1 span { color:var(--accent); }
+    .topbar-actions { display:flex; gap:12px; align-items:center; }
+    .topbar-actions a, .topbar-actions button {
+      padding:8px 16px; border-radius:6px; font-size:0.85rem; cursor:pointer;
+      border:1px solid var(--border); background:var(--bg2); color:var(--text); transition:all .2s;
+    }
+    .topbar-actions button:hover, .topbar-actions a:hover { border-color:var(--accent); }
+
+    /* ===== 布局 ===== */
+    .container { max-width:1100px; margin:0 auto; padding:32px 24px; }
+
+    /* ===== 选项卡 ===== */
+    .tabs { display:flex; gap:4px; margin-bottom:32px; border-bottom:2px solid var(--border); }
+    .tab-btn {
+      padding:10px 24px; background:none; border:none; color:var(--text2);
+      font-size:0.9rem; cursor:pointer; border-bottom:2px solid transparent;
+      margin-bottom:-2px; transition:all .2s;
+    }
+    .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* ===== 卡片 ===== */
+    .card {
+      background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius);
+      padding:24px; margin-bottom:20px;
+    }
+    .card h3 { font-size:1rem; margin-bottom:16px; }
+
+    /* ===== 表单 ===== */
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; font-size:0.8rem; color:var(--text2); margin-bottom:4px; text-transform:uppercase; letter-spacing:1px; }
+    .form-group input, .form-group textarea, .form-group select {
+      width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:6px;
+      background:var(--bg); color:var(--text); font-size:0.9rem; font-family:inherit; resize:vertical;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline:none; border-color:var(--accent);
+    }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+    /* ===== 按钮 ===== */
+    .btn { padding:10px 20px; border:none; border-radius:6px; font-size:0.85rem; cursor:pointer; font-weight:600; transition:all .2s; }
+    .btn-primary { background:var(--accent); color:#fff; }
+    .btn-primary:hover { background:var(--accent-hover); }
+    .btn-danger { background:var(--danger); color:#fff; }
+    .btn-danger:hover { background:var(--danger-hover); }
+    .btn-outline { background:none; border:1px solid var(--border); color:var(--text); }
+    .btn-outline:hover { border-color:var(--accent); color:var(--accent); }
+    .btn-sm { padding:6px 12px; font-size:0.8rem; }
+
+    /* ===== 作品列表 ===== */
+    .works-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .works-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:16px; }
+    .work-card {
+      background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius);
+      overflow:hidden; transition:transform .2s;
+    }
+    .work-card:hover { transform:translateY(-2px); }
+    .work-card img { width:100%; height:160px; object-fit:cover; background:var(--border); }
+    .work-card-body { padding:12px; }
+    .work-card-body h4 { font-size:0.9rem; margin-bottom:4px; }
+    .work-card-body p { font-size:0.75rem; color:var(--text2); margin-bottom:8px; }
+    .work-card-body .tag { display:inline-block; padding:2px 8px; background:var(--accent); color:#fff; border-radius:12px; font-size:0.7rem; margin-right:4px; }
+    .work-card-actions { display:flex; gap:8px; margin-top:8px; }
+
+    /* ===== 弹窗 ===== */
+    .modal-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200;
+      display:none; align-items:center; justify-content:center;
+    }
+    .modal-overlay.active { display:flex; }
+    .modal {
+      background:var(--bg2); border-radius:var(--radius); padding:32px;
+      width:90%; max-width:560px; max-height:90vh; overflow-y:auto;
+    }
+    .modal h3 { margin-bottom:20px; }
+    .modal-footer { display:flex; gap:12px; justify-content:flex-end; margin-top:24px; }
+
+    /* ===== 图片预览 ===== */
+    .img-preview { width:100%; max-height:200px; object-fit:cover; border-radius:6px; margin-top:8px; background:var(--border); }
+    .img-preview[src=""] { display:none; }
+
+    /* ===== 提示 ===== */
+    .toast {
+      position:fixed; bottom:24px; right:24px; padding:12px 24px;
+      background:var(--success); color:#fff; border-radius:6px;
+      font-size:0.85rem; z-index:300; opacity:0; transform:translateY(10px);
+      transition:all .3s; pointer-events:none;
+    }
+    .toast.show { opacity:1; transform:translateY(0); }
+
+    /* ===== 空状态 ===== */
+    .empty { text-align:center; padding:60px 20px; color:var(--text2); }
+    .empty p { margin-bottom:16px; }
+
+    @media(max-width:640px) {
+      .form-row { grid-template-columns:1fr; }
+      .works-grid { grid-template-columns:1fr 1fr; }
+      .topbar { padding:12px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶栏 -->
+  <div class="topbar">
+    <h1>ART<span>FOLIO</span> · 管理后台</h1>
+    <div class="topbar-actions">
+      <a href="index.html" target="_blank">查看前台</a>
+      <button onclick="exportData()">导出数据</button>
+      <button onclick="importDataClick()">导入数据</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- 选项卡 -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="works">作品管理</button>
+      <button class="tab-btn" data-tab="profile">个人信息</button>
+      <button class="tab-btn" data-tab="contact">联系方式</button>
+    </div>
+
+    <!-- ====== 作品管理 ====== -->
+    <div class="tab-panel active" id="tab-works">
+      <div class="works-header">
+        <h2 style="font-size:1.1rem;">全部作品 (<span id="workCount">0</span>)</h2>
+        <button class="btn btn-primary" onclick="openWorkModal()">+ 添加作品</button>
+      </div>
+      <div class="works-grid" id="worksGrid"></div>
+      <div class="empty" id="worksEmpty" style="display:none;">
+        <p>还没有作品，点击上方按钮添加第一件作品吧</p>
+      </div>
+    </div>
+
+    <!-- ====== 个人信息 ====== -->
+    <div class="tab-panel" id="tab-profile">
+      <div class="card">
+        <h3>个人简介</h3>
+        <div class="form-group">
+          <label>艺术家姓名</label>
+          <input type="text" id="profileName" placeholder="你的名字">
+        </div>
+        <div class="form-group">
+          <label>头像图片URL</label>
+          <input type="text" id="profileAvatar" placeholder="https://...">
+          <img class="img-preview" id="avatarPreview" src="">
+        </div>
+        <div class="form-group">
+          <label>简介段落1</label>
+          <textarea id="profileBio1" rows="3" placeholder="第一段自我介绍..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>简介段落2</label>
+          <textarea id="profileBio2" rows="3" placeholder="第二段自我介绍..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>作品数量</label>
+            <input type="text" id="statWorks" placeholder="120+">
+          </div>
+          <div class="form-group">
+            <label>展览数量</label>
+            <input type="text" id="statExhibitions" placeholder="30+">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>从业年限</label>
+          <input type="text" id="statYears" placeholder="8">
+        </div>
+        <button class="btn btn-primary" onclick="saveProfile()">保存个人信息</button>
+      </div>
+    </div>
+
+    <!-- ====== 联系方式 ====== -->
+    <div class="tab-panel" id="tab-contact">
+      <div class="card">
+        <h3>联系信息</h3>
+        <div class="form-group">
+          <label>邮箱</label>
+          <input type="email" id="contactEmail" placeholder="artist@example.com">
+        </div>
+        <div class="form-group">
+          <label>电话</label>
+          <input type="text" id="contactPhone" placeholder="138-0013-8000">
+        </div>
+        <div class="form-group">
+          <label>工作室地址</label>
+          <input type="text" id="contactAddress" placeholder="北京市朝阳区 798 艺术区">
+        </div>
+        <h3 style="margin-top:24px;">社交媒体链接</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>微博</label>
+            <input type="text" id="socialWeibo" placeholder="https://weibo.com/...">
+          </div>
+          <div class="form-group">
+            <label>Instagram</label>
+            <input type="text" id="socialInstagram" placeholder="https://instagram.com/...">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Behance</label>
+            <input type="text" id="socialBehance" placeholder="https://behance.net/...">
+          </div>
+          <div class="form-group">
+            <label>ArtStation</label>
+            <input type="text" id="socialArtstation" placeholder="https://artstation.com/...">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveContact()">保存联系方式</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 作品编辑弹窗 ====== -->
+  <div class="modal-overlay" id="workModal">
+    <div class="modal">
+      <h3 id="modalTitle">添加作品</h3>
+      <input type="hidden" id="editWorkId">
+      <div class="form-group">
+        <label>作品名称</label>
+        <input type="text" id="workTitle" placeholder="晨光中的田野">
+      </div>
+      <div class="form-group">
+        <label>图片URL</label>
+        <input type="text" id="workImage" placeholder="https://..." oninput="document.getElementById('workImgPreview').src=this.value">
+        <img class="img-preview" id="workImgPreview" src="">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>分类</label>
+          <select id="workCategory">
+            <option value="oil">油画</option>
+            <option value="sketch">素描</option>
+            <option value="digital">数字艺术</option>
+            <option value="watercolor">水彩</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>年份</label>
+          <input type="text" id="workYear" placeholder="2024">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>描述 / 媒介</label>
+        <input type="text" id="workDesc" placeholder="布面油画 · 2024">
+      </div>
+      <div class="form-group">
+        <label>创作背景（可选）</label>
+        <textarea id="workStory" rows="3" placeholder="这幅作品的创作灵感来源于..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeWorkModal()">取消</button>
+        <button class="btn btn-primary" onclick="saveWork()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提示 -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* ========== 数据层 ========== */
+    const STORAGE_KEYS = {
+      works: 'artfolio_works',
+      profile: 'artfolio_profile',
+      contact: 'artfolio_contact'
+    };
+
+    function getData(key) {
+      try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; }
+    }
+    function setData(key, val) {
+      localStorage.setItem(key, JSON.stringify(val));
+    }
+
+    /* ========== 提示 ========== */
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    /* ========== 选项卡 ========== */
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    /* ========== 作品管理 ========== */
+    const CATEGORY_MAP = { oil:'油画', sketch:'素描', digital:'数字艺术', watercolor:'水彩' };
+
+    function getWorks() { return getData(STORAGE_KEYS.works) || []; }
+    function saveWorks(works) { setData(STORAGE_KEYS.works, works); }
+
+    function renderWorks() {
+      const works = getWorks();
+      const grid = document.getElementById('worksGrid');
+      const empty = document.getElementById('worksEmpty');
+      document.getElementById('workCount').textContent = works.length;
+
+      if (works.length === 0) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      grid.innerHTML = works.map(w => `
+        <div class="work-card">
+          <img src="${w.image}" alt="${w.title}" onerror="this.style.background='linear-gradient(135deg,#ddd,#bbb)';this.src='';">
+          <div class="work-card-body">
+            <h4>${w.title}</h4>
+            <p>${w.desc}</p>
+            <span class="tag">${CATEGORY_MAP[w.category] || w.category}</span>
+            <div class="work-card-actions">
+              <button class="btn btn-outline btn-sm" onclick="editWork('${w.id}')">编辑</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteWork('${w.id}')">删除</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openWorkModal(id) {
+      const modal = document.getElementById('workModal');
+      document.getElementById('editWorkId').value = '';
+      document.getElementById('modalTitle').textContent = '添加作品';
+      document.getElementById('workTitle').value = '';
+      document.getElementById('workImage').value = '';
+      document.getElementById('workImgPreview').src = '';
+      document.getElementById('workCategory').value = 'oil';
+      document.getElementById('workYear').value = '';
+      document.getElementById('workDesc').value = '';
+      document.getElementById('workStory').value = '';
+      modal.classList.add('active');
+    }
+
+    function closeWorkModal() {
+      document.getElementById('workModal').classList.remove('active');
+    }
+
+    function editWork(id) {
+      const works = getWorks();
+      const w = works.find(x => x.id === id);
+      if (!w) return;
+      document.getElementById('editWorkId').value = w.id;
+      document.getElementById('modalTitle').textContent = '编辑作品';
+      document.getElementById('workTitle').value = w.title;
+      document.getElementById('workImage').value = w.image;
+      document.getElementById('workImgPreview').src = w.image;
+      document.getElementById('workCategory').value = w.category;
+      document.getElementById('workYear').value = w.year || '';
+      document.getElementById('workDesc').value = w.desc;
+      document.getElementById('workStory').value = w.story || '';
+      document.getElementById('workModal').classList.add('active');
+    }
+
+    function saveWork() {
+      const id = document.getElementById('editWorkId').value;
+      const work = {
+        id: id || Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        title: document.getElementById('workTitle').value.trim(),
+        image: document.getElementById('workImage').value.trim(),
+        category: document.getElementById('workCategory').value,
+        year: document.getElementById('workYear').value.trim(),
+        desc: document.getElementById('workDesc').value.trim(),
+        story: document.getElementById('workStory').value.trim()
+      };
+      if (!work.title) { alert('请填写作品名称'); return; }
+
+      const works = getWorks();
+      if (id) {
+        const idx = works.findIndex(x => x.id === id);
+        if (idx !== -1) works[idx] = work;
+      } else {
+        works.unshift(work);
+      }
+      saveWorks(works);
+      renderWorks();
+      closeWorkModal();
+      showToast(id ? '作品已更新' : '作品已添加');
+    }
+
+    function deleteWork(id) {
+      if (!confirm('确定删除这件作品？')) return;
+      const works = getWorks().filter(x => x.id !== id);
+      saveWorks(works);
+      renderWorks();
+      showToast('作品已删除');
+    }
+
+    /* ========== 个人信息 ========== */
+    function loadProfile() {
+      const p = getData(STORAGE_KEYS.profile) || {};
+      document.getElementById('profileName').value = p.name || '';
+      document.getElementById('profileAvatar').value = p.avatar || '';
+      document.getElementById('avatarPreview').src = p.avatar || '';
+      document.getElementById('profileBio1').value = p.bio1 || '';
+      document.getElementById('profileBio2').value = p.bio2 || '';
+      document.getElementById('statWorks').value = p.statWorks || '';
+      document.getElementById('statExhibitions').value = p.statExhibitions || '';
+      document.getElementById('statYears').value = p.statYears || '';
+    }
+
+    document.getElementById('profileAvatar').addEventListener('input', function() {
+      document.getElementById('avatarPreview').src = this.value;
+    });
+
+    function saveProfile() {
+      setData(STORAGE_KEYS.profile, {
+        name: document.getElementById('profileName').value.trim(),
+        avatar: document.getElementById('profileAvatar').value.trim(),
+        bio1: document.getElementById('profileBio1').value.trim(),
+        bio2: document.getElementById('profileBio2').value.trim(),
+        statWorks: document.getElementById('statWorks').value.trim(),
+        statExhibitions: document.getElementById('statExhibitions').value.trim(),
+        statYears: document.getElementById('statYears').value.trim()
+      });
+      showToast('个人信息已保存');
+    }
+
+    /* ========== 联系方式 ========== */
+    function loadContact() {
+      const c = getData(STORAGE_KEYS.contact) || {};
+      document.getElementById('contactEmail').value = c.email || '';
+      document.getElementById('contactPhone').value = c.phone || '';
+      document.getElementById('contactAddress').value = c.address || '';
+      document.getElementById('socialWeibo').value = c.weibo || '';
+      document.getElementById('socialInstagram').value = c.instagram || '';
+      document.getElementById('socialBehance').value = c.behance || '';
+      document.getElementById('socialArtstation').value = c.artstation || '';
+    }
+
+    function saveContact() {
+      setData(STORAGE_KEYS.contact, {
+        email: document.getElementById('contactEmail').value.trim(),
+        phone: document.getElementById('contactPhone').value.trim(),
+        address: document.getElementById('contactAddress').value.trim(),
+        weibo: document.getElementById('socialWeibo').value.trim(),
+        instagram: document.getElementById('socialInstagram').value.trim(),
+        behance: document.getElementById('socialBehance').value.trim(),
+        artstation: document.getElementById('socialArtstation').value.trim()
+      });
+      showToast('联系方式已保存');
+    }
+
+    /* ========== 导入导出 ========== */
+    function exportData() {
+      const data = {
+        works: getData(STORAGE_KEYS.works),
+        profile: getData(STORAGE_KEYS.profile),
+        contact: getData(STORAGE_KEYS.contact)
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'artfolio-data-' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      showToast('数据已导出');
+    }
+
+    function importDataClick() {
+      document.getElementById('importFile').click();
+    }
+
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (data.works) setData(STORAGE_KEYS.works, data.works);
+          if (data.profile) setData(STORAGE_KEYS.profile, data.profile);
+          if (data.contact) setData(STORAGE_KEYS.contact, data.contact);
+          renderWorks(); loadProfile(); loadContact();
+          showToast('数据导入成功');
+        } catch { alert('文件格式错误'); }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+
+    /* ========== 点击弹窗外关闭 ========== */
+    document.getElementById('workModal').addEventListener('click', function(e) {
+      if (e.target === this) closeWorkModal();
+    });
+
+    /* ========== 初始化 ========== */
+    renderWorks();
+    loadProfile();
+    loadContact();
+  </script>
+</body>
+</html>
