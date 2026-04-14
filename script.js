@@ -81,6 +81,9 @@
     const activeLink = document.querySelector(`[data-page="${pageId}"]`);
     if (activeLink) activeLink.classList.add('active');
 
+    // 更新页面指示器
+    updatePageIndicator();
+
     // 移动端关闭菜单
     closeMobileMenu();
   }
@@ -132,6 +135,35 @@
       if (e.deltaY > 0 && idx < pages.length - 1) {
         switchPage(pages[idx + 1]);
       } else if (e.deltaY < 0 && idx > 0) {
+        switchPage(pages[idx - 1]);
+      }
+    }, { passive: true });
+
+    // 触摸滑动翻页（移动端）
+    let touchStartY = 0;
+    let touchStartX = 0;
+    let touchStartTime = 0;
+    document.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+      touchStartTime = Date.now();
+    }, { passive: true });
+
+    document.addEventListener('touchend', e => {
+      const deltaY = touchStartY - e.changedTouches[0].clientY;
+      const deltaX = touchStartX - e.changedTouches[0].clientX;
+      const elapsed = Date.now() - touchStartTime;
+
+      // 忽略太慢的滑动和水平滑动
+      if (elapsed > 800 || Math.abs(deltaX) > Math.abs(deltaY)) return;
+      // 最小滑动距离 50px
+      if (Math.abs(deltaY) < 50) return;
+
+      const pages = getAllPageIds();
+      const idx = pages.indexOf(currentPage);
+      if (deltaY > 0 && idx < pages.length - 1) {
+        switchPage(pages[idx + 1]);
+      } else if (deltaY < 0 && idx > 0) {
         switchPage(pages[idx - 1]);
       }
     }, { passive: true });
@@ -221,6 +253,31 @@
     if (overlay) overlay.classList.remove('active');
   }
 
+  /* ===== 页面指示器（移动端右侧小圆点） ===== */
+  function renderPageIndicator() {
+    const pages = getAllPageIds();
+    if (pages.length === 0) return;
+
+    const indicator = document.createElement('div');
+    indicator.className = 'page-indicator';
+    indicator.id = 'pageIndicator';
+    indicator.innerHTML = pages.map((id, i) =>
+      `<span class="page-indicator-dot${i === 0 ? ' active' : ''}" data-target="${id}"></span>`
+    ).join('');
+    document.body.appendChild(indicator);
+
+    indicator.addEventListener('click', e => {
+      const dot = e.target.closest('.page-indicator-dot');
+      if (dot) switchPage(dot.dataset.target);
+    });
+  }
+
+  function updatePageIndicator() {
+    document.querySelectorAll('.page-indicator-dot').forEach(dot => {
+      dot.classList.toggle('active', dot.dataset.target === currentPage);
+    });
+  }
+
   /* ===== 初始化 ===== */
   function init() {
     renderWorkPages();
@@ -228,6 +285,7 @@
     renderProfile();
     renderContact();
     bindNavigation();
+    renderPageIndicator();
     bindMobileMenu();
   }
 

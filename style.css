@@ -22,8 +22,11 @@ body {
   font-family: var(--font-body);
   background: var(--bg-dark);
   color: var(--text-light);
-  overflow: hidden; /* 单页全屏，不滚动 */
+  overflow: hidden;
   height: 100vh;
+  height: 100dvh; /* 移动端动态视口高度 */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y; /* 允许纵向触摸 */
 }
 a { color: var(--text-light); text-decoration:none; transition: color 0.2s; }
 a:hover { color: var(--red); }
@@ -178,6 +181,7 @@ img { max-width:100%; display:block; }
 .main-content {
   margin-left: var(--nav-width);
   height: 100vh;
+  height: 100dvh;
   position: relative;
 }
 
@@ -233,6 +237,8 @@ img { max-width:100%; display:block; }
   flex-direction: column;
   justify-content: flex-end;
   padding: 60px 80px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .page-text-center {
@@ -476,7 +482,8 @@ a.contact-item:hover {
    =========================== */
 @media (max-width: 900px) {
   .side-nav {
-    transform: translateX(calc(-1 * var(--nav-width)));
+    width: 260px;
+    transform: translateX(-260px);
     transition: transform 0.3s;
   }
 
@@ -490,14 +497,23 @@ a.contact-item:hover {
 
   .main-content {
     margin-left: 0;
+    height: 100vh;
+    height: 100dvh;
   }
 
   .page-text {
     padding: 40px 24px;
+    padding-bottom: 60px; /* 底部留出安全区 */
+    justify-content: flex-end;
+  }
+
+  .page-text-center {
+    justify-content: center;
+    padding-bottom: 40px;
   }
 
   .page-text-work {
-    padding: 40px 24px;
+    padding: 40px 24px 60px;
   }
 
   .work-text-columns {
@@ -507,24 +523,104 @@ a.contact-item:hover {
 
   .page-text-contact {
     padding: 40px 24px;
+    justify-content: flex-start;
+    padding-top: 80px;
+  }
+
+  .page-text-about {
+    padding: 60px 24px;
+    justify-content: flex-start;
+    padding-top: 80px;
+    overflow-y: auto;
   }
 
   .page-title-red {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   .page-title-cn {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+
+  .page-desc {
+    font-size: 0.78rem;
+  }
+
+  .about-content {
+    max-width: 100%;
+  }
+
+  .about-avatar {
+    width: 90px; height: 90px;
+    margin-bottom: 16px;
+  }
+
+  .about-stats {
+    gap: 24px;
+  }
+
+  .about-stat-num {
+    font-size: 1.4rem;
+  }
+
+  .about-social {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .about-social a {
+    font-size: 0.72rem;
+    padding: 5px 10px;
+  }
+
+  .contact-items {
+    margin-top: 24px;
+  }
+
+  .contact-item {
+    font-size: 0.82rem;
+  }
+
+  /* 页面指示器 */
+  .page-indicator {
+    display: flex;
   }
 }
 
 @media (max-width: 480px) {
+  .side-nav {
+    width: 240px;
+    transform: translateX(-240px);
+  }
+
   .side-nav-inner {
     padding: 32px 20px 20px;
   }
 
+  .side-nav-name {
+    font-size: 1.1rem;
+  }
+
   .page-text {
-    padding: 24px 16px;
+    padding: 20px 16px 50px;
+  }
+
+  .page-title-red {
+    font-size: 1.3rem;
+  }
+
+  .page-title-cn {
+    font-size: 0.85rem;
+  }
+
+  .page-work-tags {
+    gap: 4px;
+  }
+
+  .page-work-tag {
+    font-size: 0.6rem;
+    padding: 2px 8px;
   }
 
   .work-thumbs {
@@ -532,8 +628,49 @@ a.contact-item:hover {
   }
 
   .work-thumb {
-    width: 60px; height: 45px;
+    width: 50px; height: 38px;
   }
+
+  .mobile-menu-btn {
+    top: 12px; left: 12px;
+    width: 32px; height: 32px;
+  }
+}
+
+/* iOS 安全区适配 */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .page-text {
+    padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  }
+
+  .side-nav-inner {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+}
+
+/* 页面指示器（移动端） */
+.page-indicator {
+  display: none;
+  position: fixed;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  flex-direction: column;
+  gap: 8px;
+  z-index: 50;
+}
+
+.page-indicator-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-indicator-dot.active {
+  background: var(--red);
+  box-shadow: 0 0 6px var(--red-glow);
 }
 
 /* ===========================
