@@ -241,6 +241,7 @@ img { max-width:100%; display:block; }
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  transition: background-position 0.3s ease;
 }
 
 /* 遮罩 — Apple 风格：底部渐变而非全屏暗色 */
@@ -594,6 +595,19 @@ a.contact-item:hover {
     justify-content: flex-start;
     padding-top: 80px;
     overflow-y: auto;
+  }
+
+  /* 移动端背景图适配：竖屏优先展示图片上半部分 */
+  .page-bg {
+    background-position: center top;
+    background-size: cover;
+  }
+
+  /* 如果图片是横向构图，可以用 contain 模式展示完整图片 */
+  .page-bg.bg-contain {
+    background-size: contain;
+    background-position: center center;
+    background-color: #000;
   }
 
   .page-title-red {

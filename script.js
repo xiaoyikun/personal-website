@@ -29,9 +29,12 @@
       if (w.software) w.software.split(',').forEach(s => tags.push(s.trim()));
 
       const pageId = 'work-' + i;
+      // 移动端图片位置：支持 mobilePosition 字段（如 "center top", "left center"）
+      const mobilePos = w.mobilePosition || '';
+      const bgContain = w.mobileFit === 'contain' ? ' bg-contain' : '';
       return `
       <section class="page" id="${pageId}" data-page="${pageId}">
-        <div class="page-bg" style="background-image:url('${w.image}');"></div>
+        <div class="page-bg${bgContain}" style="background-image:url('${w.image}');" data-mobile-pos="${mobilePos}"></div>
         <div class="page-overlay"></div>
         <div class="page-text page-text-work">
           ${w.story ? `<div class="work-text-columns">
@@ -278,6 +281,15 @@
     });
   }
 
+  /* ===== 移动端图片位置适配 ===== */
+  function applyMobileImagePositions() {
+    if (window.innerWidth > 900) return;
+    document.querySelectorAll('.page-bg[data-mobile-pos]').forEach(bg => {
+      const pos = bg.dataset.mobilePos;
+      if (pos) bg.style.backgroundPosition = pos;
+    });
+  }
+
   /* ===== 初始化 ===== */
   function init() {
     renderWorkPages();
@@ -287,6 +299,8 @@
     bindNavigation();
     renderPageIndicator();
     bindMobileMenu();
+    applyMobileImagePositions();
+    window.addEventListener('resize', applyMobileImagePositions);
   }
 
   if (document.readyState === 'loading') {
