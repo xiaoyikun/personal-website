@@ -1,157 +1,104 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>艺术作品集 | Art Portfolio</title>
-  <meta name="description" content="专业美术作品集，展示油画、素描、数字艺术等多种艺术创作。">
-  <meta name="keywords" content="美术作品集, 油画, 素描, 数字艺术, art portfolio">
-  <meta name="author" content="Artist Name">
-  <meta property="og:title" content="艺术作品集 | Art Portfolio">
-  <meta property="og:description" content="专业美术作品集，展示油画、素描、数字艺术等多种艺术创作。">
-  <meta property="og:type" content="website">
+  <title>游戏美术作品集 | Game Art Portfolio</title>
+  <meta name="description" content="游戏美术作品集，展示角色设计、场景概念、UI设计等游戏美术创作。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Sans+SC:wght@300;400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ========== 导航栏 ========== -->
-  <nav class="navbar" id="navbar">
-    <a href="#" class="nav-logo">ART<span>FOLIO</span></a>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#gallery">作品</a></li>
-      <li><a href="#about">关于</a></li>
-      <li><a href="#contact">联系</a></li>
-    </ul>
-    <div class="nav-actions">
-      <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
-        <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-      <button class="hamburger" id="hamburger" aria-label="菜单">
-        <span></span><span></span><span></span>
-      </button>
+  <!-- ========== 左侧固定导航 ========== -->
+  <nav class="side-nav" id="sideNav">
+    <div class="side-nav-inner">
+      <!-- 姓名 -->
+      <div class="side-nav-identity">
+        <h1 class="side-nav-name" id="navName">Artist Name</h1>
+        <p class="side-nav-name-cn" id="navNameCn"></p>
+      </div>
+
+      <!-- 作品系列列表 -->
+      <ul class="side-nav-works" id="navWorksList">
+        <!-- 由 script.js 动态渲染 -->
+      </ul>
+
+      <!-- 底部链接 -->
+      <div class="side-nav-footer">
+        <a href="#contact-page" class="side-nav-link" data-page="contact">Contact</a>
+        <a href="#about-page" class="side-nav-link" data-page="about">About</a>
+        <a href="#" class="side-nav-link side-nav-cv" id="navCV" style="display:none;">CV</a>
+      </div>
     </div>
   </nav>
 
-  <!-- ========== Hero 区域 ========== -->
-  <header class="hero" id="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">用画笔<br>讲述故事</h1>
-      <p class="hero-subtitle">探索色彩与线条之间的无限可能</p>
-      <a href="#gallery" class="btn-primary">浏览作品</a>
-    </div>
-  </header>
+  <!-- 移动端菜单按钮 -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="mobile-overlay" id="mobileOverlay"></div>
 
-  <!-- ========== 作品画廊 ========== -->
-  <section class="gallery-section" id="gallery">
-    <div class="container">
-      <h2 class="section-title">作品展示</h2>
-      <div class="filter-bar">
-        <button class="filter-btn active" data-filter="all">全部</button>
-        <button class="filter-btn" data-filter="oil">油画</button>
-        <button class="filter-btn" data-filter="sketch">素描</button>
-        <button class="filter-btn" data-filter="digital">数字艺术</button>
-        <button class="filter-btn" data-filter="watercolor">水彩</button>
-      </div>
-      <div class="gallery-grid" id="galleryGrid">
-        <!-- 由 script.js 从 site-data.js 动态渲染 -->
-      </div>
-    </div>
-  </section>
+  <!-- ========== 主内容区 ========== -->
+  <main class="main-content" id="mainContent">
 
-  <!-- ========== 灯箱弹窗 ========== -->
-  <div class="lightbox" id="lightbox">
-    <button class="lightbox-close" id="lightboxClose" aria-label="关闭">&times;</button>
-    <button class="lightbox-prev" id="lightboxPrev" aria-label="上一张">&#10094;</button>
-    <button class="lightbox-next" id="lightboxNext" aria-label="下一张">&#10095;</button>
-    <div class="lightbox-content">
-      <img id="lightboxImg" src="" alt="">
-      <div class="lightbox-info">
-        <h3 id="lightboxTitle"></h3>
-        <p id="lightboxDesc"></p>
+    <!-- 首页/封面 -->
+    <section class="page page-active" id="home-page" data-page="home">
+      <div class="page-bg" style="background-image:url('https://picsum.photos/seed/gameart-hero/1920/1080');"></div>
+      <div class="page-overlay"></div>
+      <div class="page-text page-text-center">
+        <p class="page-tag">GAME ART &amp; DESIGN</p>
+        <h2 class="page-title-red" id="heroTitle">Game Art Portfolio</h2>
+        <p class="page-title-cn" id="heroTitleCn">游戏美术作品集</p>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- ========== 关于我 ========== -->
-  <section class="about-section" id="about">
-    <div class="container about-grid">
-      <div class="about-image">
-        <img src="https://picsum.photos/seed/artist/600/800" alt="艺术家照片" loading="lazy">
-      </div>
-      <div class="about-text">
-        <h2 class="section-title">关于我</h2>
-        <p>
-          你好，我是一名热爱色彩与光影的艺术创作者。毕业于中央美术学院，
-          多年来专注于油画、素描和数字艺术创作。我的作品曾在多个国内外展览中展出，
-          致力于用画笔捕捉生活中转瞬即逝的美好瞬间。
-        </p>
-        <p>
-          创作对我而言不仅是技艺的表达，更是与世界对话的方式。
-          每一幅作品都承载着我对自然、人文和情感的深刻思考。
-        </p>
-        <div class="about-stats">
-          <div class="stat"><span class="stat-num">120+</span><span class="stat-label">作品</span></div>
-          <div class="stat"><span class="stat-num">30+</span><span class="stat-label">展览</span></div>
-          <div class="stat"><span class="stat-num">8</span><span class="stat-label">年经验</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <!-- 作品详情页（由 JS 动态生成） -->
+    <div id="workPages"></div>
 
-  <!-- ========== 联系方式 ========== -->
-  <section class="contact-section" id="contact">
-    <div class="container">
-      <h2 class="section-title">联系我</h2>
-      <p class="contact-intro">如果您对我的作品感兴趣，或有合作意向，欢迎随时联系。</p>
-      <div class="contact-grid">
-        <form class="contact-form" id="contactForm">
-          <input type="text" name="name" placeholder="您的姓名" required>
-          <input type="email" name="email" placeholder="您的邮箱" required>
-          <textarea name="message" rows="5" placeholder="留言内容" required></textarea>
-          <button type="submit" class="btn-primary">发送消息</button>
-        </form>
-        <div class="contact-info">
-          <div class="info-item">
-            <strong>邮箱</strong>
-            <a href="mailto:artist@example.com">artist@example.com</a>
+    <!-- 关于页 -->
+    <section class="page" id="about-page" data-page="about">
+      <div class="page-bg" style="background-image:url('https://picsum.photos/seed/about-bg/1920/1080');"></div>
+      <div class="page-overlay"></div>
+      <div class="page-text page-text-about">
+        <div class="about-content">
+          <div class="about-avatar">
+            <img id="aboutAvatar" src="https://picsum.photos/seed/gameartist/400/400" alt="头像">
           </div>
-          <div class="info-item">
-            <strong>电话</strong>
-            <a href="tel:+8613800138000">138-0013-8000</a>
+          <div class="about-bio">
+            <p id="aboutBio1">专注于游戏美术的创作者。擅长角色设计、场景概念和UI设计。</p>
+            <p id="aboutBio2">曾参与多款游戏项目的美术制作，致力于用视觉语言构建沉浸式的游戏世界。</p>
           </div>
-          <div class="info-item">
-            <strong>工作室地址</strong>
-            <p>北京市朝阳区 798 艺术区</p>
+          <div class="about-stats">
+            <div class="about-stat"><span class="about-stat-num" id="statWorks">50+</span><span class="about-stat-label">作品</span></div>
+            <div class="about-stat"><span class="about-stat-num" id="statProjects">10+</span><span class="about-stat-label">游戏项目</span></div>
+            <div class="about-stat"><span class="about-stat-num" id="statYears">5</span><span class="about-stat-label">年经验</span></div>
           </div>
-          <div class="social-links">
-            <a href="#" aria-label="微博" class="social-icon">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M20.194 14.197c0 3.248-4.085 5.88-9.124 5.88-5.038 0-9.123-2.632-9.123-5.88 0-3.247 4.085-5.879 9.123-5.879 5.04 0 9.124 2.632 9.124 5.88zm-1.6.06c-.197-2.093-2.9-3.68-6.18-3.543-3.28.136-5.782 1.943-5.585 4.036.197 2.093 2.9 3.68 6.18 3.543 3.28-.136 5.782-1.943 5.585-4.036z"/><circle cx="17" cy="5" r="1.5"/><path d="M17.5 2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5z"/></svg>
-            </a>
-            <a href="#" aria-label="Instagram" class="social-icon">
-              <svg viewBox="0 0 24 24" width="24" height="24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
-            </a>
-            <a href="#" aria-label="Behance" class="social-icon">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 2.211 1.752 2.88 3.103 2.88 1.018 0 2.014-.457 2.381-1.372L22.726 17zM15.97 12.7h4.98c-.058-1.535-.794-2.704-2.393-2.704-1.478 0-2.397.96-2.587 2.704zM9.063 18.675H2V5.745h6.789c2.38 0 4.727.835 4.727 3.625 0 1.474-.81 2.428-2.047 2.972 1.594.476 2.502 1.728 2.502 3.39 0 2.958-2.529 3.943-4.908 3.943zM8.35 8.55H5.277v3.2H8.35c1.202 0 2.156-.476 2.156-1.7 0-1.272-.89-1.5-2.156-1.5zm.26 5.69H5.277v3.63h3.333c1.273 0 2.286-.56 2.286-1.89 0-1.376-1.013-1.74-2.286-1.74z"/></svg>
-            </a>
-            <a href="#" aria-label="ArtStation" class="social-icon">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M0 17.723l2.027 3.505h.001a2.424 2.424 0 0 0 2.164 1.333h13.457l-2.792-4.838H0zm24-2.218a2.42 2.42 0 0 0-.468-1.432L14.837 1.439a2.42 2.42 0 0 0-2.096-1.22h-4.058L20.49 20.39l2.803-4.858c.006-.01.013-.02.018-.03.085-.17.15-.35.193-.54a2.39 2.39 0 0 0 .072-.457h-.001zM4.836 15.137l5.097-8.835 5.097 8.835H4.836z"/></svg>
-            </a>
+          <div class="about-social" id="aboutSocial">
+            <!-- 由 JS 渲染 -->
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ========== 页脚 ========== -->
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2024 ArtFolio. All rights reserved.</p>
-    </div>
-  </footer>
+    <!-- 联系页 -->
+    <section class="page" id="contact-page" data-page="contact">
+      <div class="page-bg" style="background-image:url('https://picsum.photos/seed/contact-bg/1920/1080');"></div>
+      <div class="page-overlay page-overlay-dark"></div>
+      <div class="page-text page-text-contact">
+        <h2 class="page-title-red">Contact</h2>
+        <p class="page-title-cn">联系方式</p>
+        <div class="contact-items">
+          <a href="mailto:artist@example.com" class="contact-item" id="contactEmail">artist@example.com</a>
+          <a href="tel:+8613800138000" class="contact-item" id="contactPhone">138-0013-8000</a>
+          <p class="contact-item" id="contactAddress">北京市朝阳区 798 艺术区</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
 
   <script src="site-data.js"></script>
   <script src="script.js"></script>

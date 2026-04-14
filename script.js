@@ -1,224 +1,234 @@
-/* ========== ArtFolio 前台渲染脚本 ========== */
+/* ========== 沉浸式作品集 — 前台脚本 ========== */
 (function () {
   const DATA = window.ARTFOLIO_DATA || { works: [], profile: {}, contact: {} };
-  const CATEGORY_MAP = { oil: '油画', sketch: '素描', digital: '数字艺术', watercolor: '水彩' };
 
-  /* ===== 作品画廊渲染 ===== */
-  function renderGallery() {
-    const grid = document.getElementById('galleryGrid');
-    if (!grid) return;
+  const CATEGORY_MAP = {
+    character: '角色设计', scene: '场景设计', ui: 'UI设计',
+    concept: '概念设计', '3d': '3D建模', effect: '特效',
+    oil: '油画', sketch: '素描', digital: '数字艺术', watercolor: '水彩'
+  };
+
+  const STYLE_MAP = {
+    realistic: '写实', stylized: '风格化', cartoon: '卡通',
+    pixel: '像素', lowpoly: 'Low Poly'
+  };
+
+  let currentPage = 'home';
+
+  /* ===== 生成作品页面 ===== */
+  function renderWorkPages() {
+    const container = document.getElementById('workPages');
+    if (!container) return;
     const works = DATA.works || [];
-    if (works.length === 0) {
-      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-secondary,#888);padding:40px 0;">暂无作品</p>';
-      return;
-    }
-    grid.innerHTML = works.map(w => `
-      <div class="gallery-item" data-category="${w.category}">
-        <img src="${w.image}" alt="${w.title}" loading="lazy"
-             onerror="this.style.background='linear-gradient(135deg,#ddd,#bbb)';this.src='';">
-        <div class="gallery-overlay">
-          <h3>${w.title}</h3>
-          <p>${w.desc || ''}</p>
+    if (works.length === 0) return;
+
+    container.innerHTML = works.map((w, i) => {
+      const tags = [];
+      if (w.category && CATEGORY_MAP[w.category]) tags.push(CATEGORY_MAP[w.category]);
+      if (w.artStyle && STYLE_MAP[w.artStyle]) tags.push(STYLE_MAP[w.artStyle]);
+      if (w.software) w.software.split(',').forEach(s => tags.push(s.trim()));
+
+      const pageId = 'work-' + i;
+      return `
+      <section class="page" id="${pageId}" data-page="${pageId}">
+        <div class="page-bg" style="background-image:url('${w.image}');"></div>
+        <div class="page-overlay"></div>
+        <div class="page-text page-text-work">
+          ${w.story ? `<div class="work-text-columns">
+            <div class="work-text-col"><p>${w.story}</p></div>
+            <div class="work-text-col"><p>${w.desc || ''}</p></div>
+          </div>` : (w.desc ? `<p class="page-desc">${w.desc}</p>` : '')}
+          <div class="page-dots"><span class="page-dot"></span><span class="page-dot"></span></div>
+          <h2 class="page-title-red">${w.title}</h2>
+          ${w.titleCn ? `<p class="page-title-cn">${w.titleCn}</p>` : ''}
+          ${tags.length ? '<div class="page-work-tags">' + tags.map(t => `<span class="page-work-tag">${t}</span>`).join('') + '</div>' : ''}
         </div>
-      </div>
-    `).join('');
-    bindLightbox();
+      </section>`;
+    }).join('');
   }
 
-  /* ===== 个人信息渲染 ===== */
-  function renderProfile() {
-    const p = DATA.profile || {};
-    // 头像
-    const avatarImg = document.querySelector('.about-image img');
-    if (avatarImg && p.avatar) avatarImg.src = p.avatar;
-    // 简介文字
-    const aboutText = document.querySelector('.about-text');
-    if (aboutText) {
-      const paragraphs = aboutText.querySelectorAll('p');
-      if (paragraphs[0] && p.bio1) paragraphs[0].textContent = p.bio1;
-      if (paragraphs[1] && p.bio2) paragraphs[1].textContent = p.bio2;
-      // 如果 bio2 为空则隐藏第二段
-      if (paragraphs[1] && !p.bio2) paragraphs[1].style.display = 'none';
-    }
-    // 统计数字
-    const stats = document.querySelectorAll('.about-stats .stat');
-    if (stats[0]) stats[0].querySelector('.stat-num').textContent = p.statWorks || '0';
-    if (stats[1]) stats[1].querySelector('.stat-num').textContent = p.statExhibitions || '0';
-    if (stats[2]) stats[2].querySelector('.stat-num').textContent = p.statYears || '0';
-    // 页面标题中的名字
-    if (p.name) {
-      const heroTitle = document.querySelector('.hero-title');
-      // 不覆盖 hero 标题，保持原样
-    }
+  /* ===== 生成左侧导航作品列表 ===== */
+  function renderNavWorks() {
+    const list = document.getElementById('navWorksList');
+    if (!list) return;
+    const works = DATA.works || [];
+
+    list.innerHTML = works.map((w, i) => {
+      return `<li><a href="#work-${i}" data-page="work-${i}">${w.title}</a></li>`;
+    }).join('');
   }
 
-  /* ===== 联系方式渲染 ===== */
-  function renderContact() {
-    const c = DATA.contact || {};
-    const infoItems = document.querySelectorAll('.contact-info .info-item');
-    // 邮箱
-    if (infoItems[0] && c.email) {
-      const a = infoItems[0].querySelector('a');
-      if (a) { a.href = 'mailto:' + c.email; a.textContent = c.email; }
+  /* ===== 页面切换 ===== */
+  function switchPage(pageId) {
+    if (currentPage === pageId) return;
+
+    // 隐藏当前页
+    document.querySelectorAll('.page.page-active').forEach(p => {
+      p.classList.remove('page-active');
+    });
+
+    // 显示目标页
+    const target = document.getElementById(pageId);
+    if (target) {
+      target.classList.add('page-active');
+      currentPage = pageId;
     }
-    // 电话
-    if (infoItems[1] && c.phone) {
-      const a = infoItems[1].querySelector('a');
-      if (a) { a.href = 'tel:' + c.phone; a.textContent = c.phone; }
-    }
-    // 地址
-    if (infoItems[2] && c.address) {
-      const p = infoItems[2].querySelector('p');
-      if (p) p.textContent = c.address;
-    }
-    // 社交链接
-    const socialLinks = document.querySelectorAll('.social-links .social-icon');
-    const socialMap = [c.weibo, c.instagram, c.behance, c.artstation];
-    socialLinks.forEach((link, i) => {
-      if (socialMap[i]) {
-        link.href = socialMap[i];
-        link.target = '_blank';
-        link.style.display = '';
-      } else {
-        link.style.display = 'none';
+
+    // 更新导航高亮
+    document.querySelectorAll('.side-nav-works a, .side-nav-link').forEach(a => {
+      a.classList.remove('active');
+    });
+    const activeLink = document.querySelector(`[data-page="${pageId}"]`);
+    if (activeLink) activeLink.classList.add('active');
+
+    // 移动端关闭菜单
+    closeMobileMenu();
+  }
+
+  function bindNavigation() {
+    // 作品列表点击
+    document.addEventListener('click', e => {
+      const link = e.target.closest('[data-page]');
+      if (!link) return;
+      e.preventDefault();
+      const pageId = link.dataset.page;
+      if (pageId) switchPage(pageId + '-page' === pageId ? pageId : (document.getElementById(pageId) ? pageId : pageId + '-page'));
+    });
+
+    // 修正：直接用 data-page 匹配 section id
+    document.addEventListener('click', e => {
+      const link = e.target.closest('.side-nav-works a, .side-nav-link');
+      if (!link) return;
+      e.preventDefault();
+      const pageId = link.dataset.page;
+      if (pageId && document.getElementById(pageId)) {
+        switchPage(pageId);
+      } else if (pageId && document.getElementById(pageId + '-page')) {
+        switchPage(pageId + '-page');
       }
     });
-  }
 
-  /* ===== 灯箱 ===== */
-  function bindLightbox() {
-    const items = document.querySelectorAll('.gallery-item');
-    const lightbox = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lightboxImg');
-    const lbTitle = document.getElementById('lightboxTitle');
-    const lbDesc = document.getElementById('lightboxDesc');
-    let currentIdx = 0;
-    const visibleItems = () => Array.from(document.querySelectorAll('.gallery-item')).filter(
-      el => el.style.display !== 'none'
-    );
-
-    items.forEach(item => {
-      item.addEventListener('click', () => {
-        const vis = visibleItems();
-        currentIdx = vis.indexOf(item);
-        const img = item.querySelector('img');
-        const overlay = item.querySelector('.gallery-overlay');
-        lbImg.src = img.src;
-        lbTitle.textContent = overlay.querySelector('h3').textContent;
-        lbDesc.textContent = overlay.querySelector('p').textContent;
-        lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      });
-    });
-
-    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
-
-    document.getElementById('lightboxPrev').addEventListener('click', () => {
-      const vis = visibleItems();
-      currentIdx = (currentIdx - 1 + vis.length) % vis.length;
-      showLightboxItem(vis[currentIdx]);
-    });
-    document.getElementById('lightboxNext').addEventListener('click', () => {
-      const vis = visibleItems();
-      currentIdx = (currentIdx + 1) % vis.length;
-      showLightboxItem(vis[currentIdx]);
-    });
-
-    function showLightboxItem(item) {
-      const img = item.querySelector('img');
-      const overlay = item.querySelector('.gallery-overlay');
-      lbImg.src = img.src;
-      lbTitle.textContent = overlay.querySelector('h3').textContent;
-      lbDesc.textContent = overlay.querySelector('p').textContent;
-    }
-
-    function closeLightbox() {
-      lightbox.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-
-    // 键盘导航
+    // 键盘导航（上下箭头切换作品）
     document.addEventListener('keydown', e => {
-      if (!lightbox.classList.contains('active')) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') document.getElementById('lightboxPrev').click();
-      if (e.key === 'ArrowRight') document.getElementById('lightboxNext').click();
+      const pages = getAllPageIds();
+      const idx = pages.indexOf(currentPage);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (idx < pages.length - 1) switchPage(pages[idx + 1]);
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (idx > 0) switchPage(pages[idx - 1]);
+      }
     });
+
+    // 鼠标滚轮切换
+    let wheelTimeout = null;
+    document.addEventListener('wheel', e => {
+      if (wheelTimeout) return;
+      wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 800);
+
+      const pages = getAllPageIds();
+      const idx = pages.indexOf(currentPage);
+      if (e.deltaY > 0 && idx < pages.length - 1) {
+        switchPage(pages[idx + 1]);
+      } else if (e.deltaY < 0 && idx > 0) {
+        switchPage(pages[idx - 1]);
+      }
+    }, { passive: true });
   }
 
-  /* ===== 筛选 ===== */
-  function bindFilter() {
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const filter = btn.dataset.filter;
-        document.querySelectorAll('.gallery-item').forEach(item => {
-          item.style.display = (filter === 'all' || item.dataset.category === filter) ? '' : 'none';
-        });
-      });
-    });
+  function getAllPageIds() {
+    return Array.from(document.querySelectorAll('.page')).map(p => p.id);
   }
 
-  /* ===== 主题切换 ===== */
-  function bindTheme() {
-    const toggle = document.getElementById('themeToggle');
-    if (!toggle) return;
-    const saved = localStorage.getItem('artfolio_theme');
-    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  /* ===== 渲染个人信息 ===== */
+  function renderProfile() {
+    const p = DATA.profile || {};
 
-    toggle.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('artfolio_theme', next);
-    });
+    const navName = document.getElementById('navName');
+    if (navName && p.name) navName.textContent = p.name;
+
+    const navNameCn = document.getElementById('navNameCn');
+    if (navNameCn && p.nameCn) navNameCn.textContent = p.nameCn;
+
+    const aboutAvatar = document.getElementById('aboutAvatar');
+    if (aboutAvatar && p.avatar) aboutAvatar.src = p.avatar;
+
+    const bio1 = document.getElementById('aboutBio1');
+    if (bio1 && p.bio1) bio1.textContent = p.bio1;
+
+    const bio2 = document.getElementById('aboutBio2');
+    if (bio2 && p.bio2) bio2.textContent = p.bio2;
+    if (bio2 && !p.bio2) bio2.style.display = 'none';
+
+    const statW = document.getElementById('statWorks');
+    if (statW) statW.textContent = p.statWorks || '0';
+    const statP = document.getElementById('statProjects');
+    if (statP) statP.textContent = p.statExhibitions || '0';
+    const statY = document.getElementById('statYears');
+    if (statY) statY.textContent = p.statYears || '0';
   }
 
-  /* ===== 导航栏 ===== */
-  function bindNav() {
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
-    if (hamburger && navLinks) {
-      hamburger.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
-        hamburger.classList.toggle('active');
-      });
-      navLinks.querySelectorAll('a').forEach(a => {
-        a.addEventListener('click', () => {
-          navLinks.classList.remove('active');
-          hamburger.classList.remove('active');
-        });
-      });
+  /* ===== 渲染联系方式 ===== */
+  function renderContact() {
+    const c = DATA.contact || {};
+
+    const email = document.getElementById('contactEmail');
+    if (email && c.email) { email.href = 'mailto:' + c.email; email.textContent = c.email; }
+
+    const phone = document.getElementById('contactPhone');
+    if (phone && c.phone) { phone.href = 'tel:' + c.phone; phone.textContent = c.phone; }
+
+    const addr = document.getElementById('contactAddress');
+    if (addr && c.address) addr.textContent = c.address;
+
+    // 关于页社交链接
+    const social = document.getElementById('aboutSocial');
+    if (social) {
+      const links = [];
+      if (c.artstation) links.push(`<a href="${c.artstation}" target="_blank">ArtStation</a>`);
+      if (c.behance) links.push(`<a href="${c.behance}" target="_blank">Behance</a>`);
+      if (c.bilibili) links.push(`<a href="${c.bilibili}" target="_blank">B站</a>`);
+      if (c.weibo) links.push(`<a href="${c.weibo}" target="_blank">微博</a>`);
+      social.innerHTML = links.join('');
     }
-    // 滚动时导航栏样式
-    window.addEventListener('scroll', () => {
-      const navbar = document.getElementById('navbar');
-      if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
-    });
   }
 
-  /* ===== 联系表单 ===== */
-  function bindContactForm() {
-    const form = document.getElementById('contactForm');
-    if (!form) return;
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      alert('感谢您的留言！我会尽快回复。');
-      form.reset();
+  /* ===== 移动端菜单 ===== */
+  function bindMobileMenu() {
+    const btn = document.getElementById('mobileMenuBtn');
+    const nav = document.getElementById('sideNav');
+    const overlay = document.getElementById('mobileOverlay');
+    if (!btn || !nav) return;
+
+    btn.addEventListener('click', () => {
+      nav.classList.toggle('open');
+      btn.classList.toggle('active');
+      if (overlay) overlay.classList.toggle('active', nav.classList.contains('open'));
     });
+
+    if (overlay) {
+      overlay.addEventListener('click', closeMobileMenu);
+    }
+  }
+
+  function closeMobileMenu() {
+    const btn = document.getElementById('mobileMenuBtn');
+    const nav = document.getElementById('sideNav');
+    const overlay = document.getElementById('mobileOverlay');
+    if (nav) nav.classList.remove('open');
+    if (btn) btn.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
   }
 
   /* ===== 初始化 ===== */
   function init() {
-    renderGallery();
+    renderWorkPages();
+    renderNavWorks();
     renderProfile();
     renderContact();
-    bindFilter();
-    bindTheme();
-    bindNav();
-    bindContactForm();
+    bindNavigation();
+    bindMobileMenu();
   }
 
   if (document.readyState === 'loading') {

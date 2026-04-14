@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>后台管理 | ArtFolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>后台管理 | GameFolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     /* ===== 变量 ===== */
     :root {
       --bg: #f5f5f5; --bg2: #ffffff; --text: #1a1a1a; --text2: #555;
-      --accent: #c9a96e; --accent-hover: #b8923f; --border: #e0e0e0;
+      --accent: #6c5ce7; --accent-hover: #a29bfe; --border: #e0e0e0;
       --danger: #e74c3c; --danger-hover: #c0392b; --success: #27ae60;
       --shadow: rgba(0,0,0,0.06); --radius: 8px;
     }
@@ -137,7 +137,7 @@
 
   <!-- 顶栏 -->
   <div class="topbar">
-    <h1>ART<span>FOLIO</span> · 管理后台</h1>
+    <h1 style="font-family:'Orbitron',sans-serif;letter-spacing:2px;">GAME<span>FOLIO</span> · 管理后台</h1>
     <div class="topbar-actions">
       <a href="index.html" target="_blank">查看前台</a>
       <button onclick="publishData()" style="background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;">🚀 发布数据</button>
@@ -172,7 +172,7 @@
       <div class="card">
         <h3>个人简介</h3>
         <div class="form-group">
-          <label>艺术家姓名</label>
+          <label>游戏美术师姓名</label>
           <input type="text" id="profileName" placeholder="你的名字">
         </div>
         <div class="form-group">
@@ -182,25 +182,25 @@
         </div>
         <div class="form-group">
           <label>简介段落1</label>
-          <textarea id="profileBio1" rows="3" placeholder="第一段自我介绍..."></textarea>
+          <textarea id="profileBio1" rows="3" placeholder="擅长角色设计、场景概念..."></textarea>
         </div>
         <div class="form-group">
           <label>简介段落2</label>
-          <textarea id="profileBio2" rows="3" placeholder="第二段自我介绍..."></textarea>
+          <textarea id="profileBio2" rows="3" placeholder="曾参与多款游戏项目..."></textarea>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>作品数量</label>
-            <input type="text" id="statWorks" placeholder="120+">
+            <input type="text" id="statWorks" placeholder="50+">
           </div>
           <div class="form-group">
-            <label>展览数量</label>
-            <input type="text" id="statExhibitions" placeholder="30+">
+            <label>游戏项目数</label>
+            <input type="text" id="statExhibitions" placeholder="10+">
           </div>
         </div>
         <div class="form-group">
           <label>从业年限</label>
-          <input type="text" id="statYears" placeholder="8">
+          <input type="text" id="statYears" placeholder="5">
         </div>
         <button class="btn btn-primary" onclick="saveProfile()">保存个人信息</button>
       </div>
@@ -225,22 +225,22 @@
         <h3 style="margin-top:24px;">社交媒体链接</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>微博</label>
-            <input type="text" id="socialWeibo" placeholder="https://weibo.com/...">
+            <label>ArtStation</label>
+            <input type="text" id="socialArtstation" placeholder="https://artstation.com/...">
           </div>
-          <div class="form-group">
-            <label>Instagram</label>
-            <input type="text" id="socialInstagram" placeholder="https://instagram.com/...">
-          </div>
-        </div>
-        <div class="form-row">
           <div class="form-group">
             <label>Behance</label>
             <input type="text" id="socialBehance" placeholder="https://behance.net/...">
           </div>
+        </div>
+        <div class="form-row">
           <div class="form-group">
-            <label>ArtStation</label>
-            <input type="text" id="socialArtstation" placeholder="https://artstation.com/...">
+            <label>B站</label>
+            <input type="text" id="socialBilibili" placeholder="https://space.bilibili.com/...">
+          </div>
+          <div class="form-group">
+            <label>微博</label>
+            <input type="text" id="socialWeibo" placeholder="https://weibo.com/...">
           </div>
         </div>
         <button class="btn btn-primary" onclick="saveContact()">保存联系方式</button>
@@ -255,7 +255,7 @@
       <input type="hidden" id="editWorkId">
       <div class="form-group">
         <label>作品名称</label>
-        <input type="text" id="workTitle" placeholder="晨光中的田野">
+        <input type="text" id="workTitle" placeholder="暗影猎人 · 角色设计">
       </div>
       <div class="form-group">
         <label>上传图片</label>
@@ -265,13 +265,32 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>分类</label>
+          <label>作品类型</label>
           <select id="workCategory">
-            <option value="oil">油画</option>
-            <option value="sketch">素描</option>
-            <option value="digital">数字艺术</option>
-            <option value="watercolor">水彩</option>
+            <option value="character">角色设计</option>
+            <option value="scene">场景设计</option>
+            <option value="ui">UI设计</option>
+            <option value="concept">概念设计</option>
+            <option value="3d">3D建模</option>
+            <option value="effect">特效</option>
           </select>
+        </div>
+        <div class="form-group">
+          <label>美术风格</label>
+          <select id="workArtStyle">
+            <option value="">-- 选择风格 --</option>
+            <option value="realistic">写实</option>
+            <option value="stylized">风格化</option>
+            <option value="cartoon">卡通</option>
+            <option value="pixel">像素</option>
+            <option value="lowpoly">Low Poly</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>制作软件</label>
+          <input type="text" id="workSoftware" placeholder="Photoshop, Blender, Substance Painter">
         </div>
         <div class="form-group">
           <label>年份</label>
@@ -279,12 +298,12 @@
         </div>
       </div>
       <div class="form-group">
-        <label>描述 / 媒介</label>
-        <input type="text" id="workDesc" placeholder="布面油画 · 2024">
+        <label>描述</label>
+        <input type="text" id="workDesc" placeholder="为某RPG游戏设计的主角概念图">
       </div>
       <div class="form-group">
-        <label>创作背景（可选）</label>
-        <textarea id="workStory" rows="3" placeholder="这幅作品的创作灵感来源于..."></textarea>
+        <label>制作过程 / 创作背景（可选）</label>
+        <textarea id="workStory" rows="4" placeholder="从草图到成品的制作流程，使用了哪些技巧..."></textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeWorkModal()">取消</button>
@@ -330,7 +349,12 @@
     });
 
     /* ========== 作品管理 ========== */
-    const CATEGORY_MAP = { oil:'油画', sketch:'素描', digital:'数字艺术', watercolor:'水彩' };
+    const CATEGORY_MAP = {
+      character:'角色设计', scene:'场景设计', ui:'UI设计',
+      concept:'概念设计', '3d':'3D建模', effect:'特效',
+      // 兼容旧数据
+      oil:'油画', sketch:'素描', digital:'数字艺术', watercolor:'水彩'
+    };
 
     function getWorks() { return getData(STORAGE_KEYS.works) || []; }
     function saveWorks(works) { setData(STORAGE_KEYS.works, works); }
@@ -350,11 +374,13 @@
 
       grid.innerHTML = works.map(w => `
         <div class="work-card">
-          <img src="${w.image}" alt="${w.title}" onerror="this.style.background='linear-gradient(135deg,#ddd,#bbb)';this.src='';">
+          <img src="${w.image}" alt="${w.title}" onerror="this.style.background='linear-gradient(135deg,#1e1e2e,#16161f)';this.src='';">
           <div class="work-card-body">
             <h4>${w.title}</h4>
-            <p>${w.desc}</p>
+            <p>${w.desc || ''}</p>
             <span class="tag">${CATEGORY_MAP[w.category] || w.category}</span>
+            ${w.artStyle ? '<span class="tag" style="background:var(--accent-hover);">' + (w.artStyle) + '</span>' : ''}
+            ${w.software ? '<span class="tag" style="background:#00b894;">' + w.software + '</span>' : ''}
             <div class="work-card-actions">
               <button class="btn btn-outline btn-sm" onclick="editWork('${w.id}')">编辑</button>
               <button class="btn btn-danger btn-sm" onclick="deleteWork('${w.id}')">删除</button>
@@ -384,7 +410,9 @@
       document.getElementById('workImage').value = '';
       document.getElementById('workImageFile').value = '';
       document.getElementById('workImgPreview').src = '';
-      document.getElementById('workCategory').value = 'oil';
+      document.getElementById('workCategory').value = 'character';
+      document.getElementById('workArtStyle').value = '';
+      document.getElementById('workSoftware').value = '';
       document.getElementById('workYear').value = '';
       document.getElementById('workDesc').value = '';
       document.getElementById('workStory').value = '';
@@ -406,6 +434,8 @@
       document.getElementById('workImageFile').value = '';
       document.getElementById('workImgPreview').src = w.image;
       document.getElementById('workCategory').value = w.category;
+      document.getElementById('workArtStyle').value = w.artStyle || '';
+      document.getElementById('workSoftware').value = w.software || '';
       document.getElementById('workYear').value = w.year || '';
       document.getElementById('workDesc').value = w.desc;
       document.getElementById('workStory').value = w.story || '';
@@ -419,6 +449,8 @@
         title: document.getElementById('workTitle').value.trim(),
         image: document.getElementById('workImage').value.trim(),
         category: document.getElementById('workCategory').value,
+        artStyle: document.getElementById('workArtStyle').value,
+        software: document.getElementById('workSoftware').value.trim(),
         year: document.getElementById('workYear').value.trim(),
         desc: document.getElementById('workDesc').value.trim(),
         story: document.getElementById('workStory').value.trim()
@@ -482,10 +514,10 @@
       document.getElementById('contactEmail').value = c.email || '';
       document.getElementById('contactPhone').value = c.phone || '';
       document.getElementById('contactAddress').value = c.address || '';
-      document.getElementById('socialWeibo').value = c.weibo || '';
-      document.getElementById('socialInstagram').value = c.instagram || '';
-      document.getElementById('socialBehance').value = c.behance || '';
       document.getElementById('socialArtstation').value = c.artstation || '';
+      document.getElementById('socialBehance').value = c.behance || '';
+      document.getElementById('socialBilibili').value = c.bilibili || '';
+      document.getElementById('socialWeibo').value = c.weibo || '';
     }
 
     function saveContact() {
@@ -493,10 +525,10 @@
         email: document.getElementById('contactEmail').value.trim(),
         phone: document.getElementById('contactPhone').value.trim(),
         address: document.getElementById('contactAddress').value.trim(),
-        weibo: document.getElementById('socialWeibo').value.trim(),
-        instagram: document.getElementById('socialInstagram').value.trim(),
+        artstation: document.getElementById('socialArtstation').value.trim(),
         behance: document.getElementById('socialBehance').value.trim(),
-        artstation: document.getElementById('socialArtstation').value.trim()
+        bilibili: document.getElementById('socialBilibili').value.trim(),
+        weibo: document.getElementById('socialWeibo').value.trim()
       });
       showToast('联系方式已保存');
     }
@@ -511,7 +543,7 @@
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'artfolio-data-' + new Date().toISOString().slice(0,10) + '.json';
+      a.download = 'gamefolio-data-' + new Date().toISOString().slice(0,10) + '.json';
       a.click();
       showToast('数据已导出');
     }
