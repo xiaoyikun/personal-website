@@ -167,10 +167,10 @@ img { max-width:100%; display:block; }
   top: 16px; left: 16px;
   z-index: 200;
   width: 40px; height: 40px;
-  background: rgba(255,255,255,0.88);
+  background: rgba(0,0,0,0.45);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: var(--radius-md);
   cursor: pointer;
   flex-direction: column;
@@ -178,13 +178,13 @@ img { max-width:100%; display:block; }
   justify-content: center;
   gap: 5px;
   padding: 10px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .mobile-menu-btn span {
   display: block;
   width: 18px; height: 1.5px;
-  background: var(--text-primary);
+  background: #ffffff;
   border-radius: 1px;
   transition: transform 0.3s, opacity 0.3s;
 }

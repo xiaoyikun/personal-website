@@ -13,7 +13,7 @@
     pixel: '像素', lowpoly: 'Low Poly'
   };
 
-  let currentPage = 'home';
+  let currentPage = 'home-page';
 
   /* ===== 生成作品页面 ===== */
   function renderWorkPages() {
@@ -146,10 +146,12 @@
     let touchStartY = 0;
     let touchStartX = 0;
     let touchStartTime = 0;
+    let touchStartTarget = null;
     document.addEventListener('touchstart', e => {
       touchStartY = e.touches[0].clientY;
       touchStartX = e.touches[0].clientX;
       touchStartTime = Date.now();
+      touchStartTarget = e.target;
     }, { passive: true });
 
     document.addEventListener('touchend', e => {
@@ -161,6 +163,17 @@
       if (elapsed > 800 || Math.abs(deltaX) > Math.abs(deltaY)) return;
       // 最小滑动距离 50px
       if (Math.abs(deltaY) < 50) return;
+
+      // 如果触摸起点在可滚动容器内且容器还能滚动，不翻页
+      const scrollable = touchStartTarget ? touchStartTarget.closest('.page-text') : null;
+      if (scrollable && scrollable.scrollHeight > scrollable.clientHeight + 10) {
+        const atTop = scrollable.scrollTop <= 5;
+        const atBottom = scrollable.scrollTop + scrollable.clientHeight >= scrollable.scrollHeight - 5;
+        // 向上滑（翻下一页）但内容还没滚到底 → 不翻页
+        if (deltaY > 0 && !atBottom) return;
+        // 向下滑（翻上一页）但内容还没滚到顶 → 不翻页
+        if (deltaY < 0 && !atTop) return;
+      }
 
       const pages = getAllPageIds();
       const idx = pages.indexOf(currentPage);
@@ -283,10 +296,15 @@
 
   /* ===== 移动端图片位置适配 ===== */
   function applyMobileImagePositions() {
-    if (window.innerWidth > 900) return;
+    const isMobile = window.innerWidth <= 900;
     document.querySelectorAll('.page-bg[data-mobile-pos]').forEach(bg => {
       const pos = bg.dataset.mobilePos;
-      if (pos) bg.style.backgroundPosition = pos;
+      if (isMobile && pos) {
+        bg.style.backgroundPosition = pos;
+      } else if (!isMobile && pos) {
+        // 桌面端恢复默认
+        bg.style.backgroundPosition = '';
+      }
     });
   }
 
